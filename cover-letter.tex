@@ -1,0 +1,127 @@
+%% Cover letter for IEEE Software submission
+%% Compile with pdflatex
+\documentclass[11pt, a4paper]{letter}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\signature{Florin Olariu\\
+  Faculty of Computer Science\\
+  Alexandru Ioan Cuza University of Ia\c{s}i, Romania\\
+  \texttt{folariu@suvoda.com}\\[4pt]
+  \small(on behalf of both authors)}
+
+\address{Florin Olariu\\
+  Faculty of Computer Science\\
+  Alexandru Ioan Cuza University of Ia\c{s}i\\
+  Bd.\ Carol I, Nr.\ 11, 700506 Ia\c{s}i\\
+  Romania}
+
+\date{\today}
+
+\begin{document}
+
+\begin{letter}{%
+  Prof.\ Sigrid Eldh\\
+  Editor-in-Chief, \textit{IEEE Software}\\
+  \texttt{sigrid.eldh@ieee.org}
+}
+
+\opening{Dear Prof.\ Eldh,}
+
+We are pleased to submit our manuscript,
+
+\begin{center}
+  \textbf{``From Monolith to Cloud: An Agentic AI Pipeline
+  for .NET Microservices Migration''}
+\end{center}
+
+for consideration in \textit{IEEE Software}.
+
+\textbf{What the paper is about.}
+We report a complete, end-to-end migration of \textit{PetRescue}, a
+.NET~10 ASP.NET~Core monolith, to independently deployable
+microservices running on Oracle Cloud Infrastructure---executed and
+validated using a ten-skill agentic AI pipeline built on Claude~Code.
+
+The research is structured around four public artefacts: Slice~1 (the
+original monolith), Slice~2 (a hand-crafted microservices decomposition
+produced independently by the second author as an expert reference),
+Slice~1~Refactored (the AI-generated decomposition produced by the
+pipeline), and Slice~3 (a Terraform configuration that deploys either
+codebase to an OCI Ampere~A1.Flex ARM64 instance at zero cost on the
+Always~Free tier).
+
+The pipeline is grounded in three design principles---\emph{skill
+atomicity}, \emph{artefact-mediated state}, and \emph{gated
+autonomy}---that make it auditable, safe for CI/CD contexts, and
+portable across projects.
+The AI-generated decomposition matches the expert reference across all
+twenty pre-defined structural dimensions---and was produced in
+approximately \textbf{5~minutes}, compared to the \textbf{one
+developer-day} the second author spent on the hand-crafted reference.
+A new feature is added identically to both codebases in a complete
+quality-gated cycle of approximately \textbf{30~minutes}, including
+automated detection and remediation of seven critical and high-severity
+security findings before the commit is permitted.
+The pipeline terminates with a Terraform-managed cloud deployment.
+
+\textbf{Why this matters to \textit{IEEE Software} readers.}
+\textit{IEEE Software} bridges research and practice.  The productivity
+numbers above are the kind of evidence practitioners need to evaluate
+whether AI-assisted migration is worth adopting.  All four artefacts
+are open-source at \url{https://github.com/florinolariuip}, so any
+reader can reproduce or extend the results on their own codebase using
+the same ten skill scripts---no modifications required.  We present
+this explicitly as a \emph{reproducible pilot}: the skills are the
+contribution; PetRescue is the validation vehicle.
+
+\textbf{Three actionable insights} (as required by \textit{IEEE
+Software}):
+\begin{enumerate}
+  \item The \texttt{/refactor} skill reproduces an expert architect's
+        decomposition in approximately \textbf{5~minutes} vs.\
+        \textbf{one developer-day} for manual migration, while
+        independently inferring security patterns the skill prompt
+        does not enumerate---demonstrating that LLMs carry substantial
+        implicit architectural knowledge that structured prompting can
+        reliably elicit.
+  \item A complete quality-gated feature addition---code, review,
+        security audit, automated fix, and gated commit---completes in
+        approximately \textbf{30~minutes}, making the quality-assured
+        path the fast path rather than an additional burden.
+  \item Ten open-source Claude~Code skill scripts form a reproducible
+        pilot any team can clone and run on their own .NET monolith:
+        the methodology is the artefact, and it is fully open.
+\end{enumerate}
+
+\textbf{Word count.}  The manuscript is within the 4{,}200-word limit,
+inclusive of three figures and two tables at 250~words each.  The
+reference list contains 15~entries, at the stated limit.  Author
+biographies are appended and not counted.
+
+\textbf{Originality.}  This work has not been submitted elsewhere and
+is not under review at any other venue.
+
+\textbf{Authors and roles.}
+\begin{itemize}
+  \item \textbf{Florin Olariu} (Alexandru Ioan Cuza University of
+    Ia\c{s}i \& Suvoda LLC) --- pipeline design and implementation,
+    evaluation, writing.
+  \item \textbf{Lenuta Alboaie} (Alexandru Ioan Cuza University of
+    Ia\c{s}i) --- expert decomposition design (Slice~2 ground truth),
+    evaluation methodology, writing.
+\end{itemize}
+
+We have no conflicts of interest to declare.  We welcome double-blind
+review and will prepare an anonymised version upon request.
+
+Thank you for considering our submission.  We look forward to your
+editorial assessment.
+
+\closing{Respectfully yours,}
+
+\end{letter}
+\end{document}

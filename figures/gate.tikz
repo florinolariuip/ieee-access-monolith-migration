@@ -1,0 +1,61 @@
+% Quality-gate cycle diagram
+\begin{tikzpicture}[
+  step/.style  = {rectangle, rounded corners=3pt, minimum width=2.4cm,
+                  minimum height=0.65cm, font=\small\ttfamily,
+                  text centered, line width=0.6pt},
+  doc/.style   = {rectangle, rounded corners=2pt, minimum width=2.0cm,
+                  minimum height=0.5cm, font=\scriptsize,
+                  fill=gray!10, draw=gray!50, line width=0.4pt},
+  decision/.style = {diamond, aspect=2.2, minimum width=2.8cm,
+                     minimum height=0.8cm, font=\scriptsize,
+                     fill=yellow!15, draw=yellow!60!black, line width=0.6pt},
+  arr/.style   = {-Stealth, line width=0.6pt},
+  block/.style = {arr, red!70},
+  allow/.style = {arr, green!60!black},
+  node distance = 0.45cm
+]
+
+% steps
+\node[step, fill=blue!15, draw=blue!50]              (rv)   {/review};
+\node[doc,  below=0.2cm of rv]                        (rvd)  {REVIEW.md};
+\node[step, fill=blue!15, draw=blue!50,
+      below=0.2cm of rvd]                             (sec)  {/check\_security};
+\node[doc,  below=0.2cm of sec]                       (secd) {SECURITY.md};
+
+\node[decision, below=0.35cm of secd]                 (gate) {any blocking\\or crit/high?};
+
+% /fix branch (left)
+\node[step, fill=red!15, draw=red!50,
+      left=1.2cm of gate]                             (fix)  {/fix};
+
+% /publish branch (right)
+\node[step, fill=green!15, draw=green!50,
+      right=1.2cm of gate]                            (pub)  {/publish};
+\node[doc,  below=0.2cm of pub]                       (pubd) {git commit\\+ push};
+
+% arrows
+\draw[arr]    (rv)   -- (rvd);
+\draw[arr]    (rvd)  -- (sec);
+\draw[arr]    (sec)  -- (secd);
+\draw[arr]    (secd) -- (gate);
+
+\draw[block]  (gate) -- node[above,font=\scriptsize,red!70]{YES} (fix);
+\draw[allow]  (gate) -- node[above,font=\scriptsize,green!60!black]{NO} (pub);
+\draw[arr]    (pub)  -- (pubd);
+
+% fix loops back up
+\draw[arr, red!60, rounded corners=4pt]
+  (fix.north) |- ([yshift=0.25cm]rv.north west) -- (rv.north west);
+
+% fix patches docs
+\draw[arr, red!60, dashed]
+  (fix.east) to[bend right=20] node[right,font=\scriptsize,red!60]{patches} (secd.west);
+\draw[arr, red!60, dashed]
+  (fix.east) to[bend right=40] node[right,font=\scriptsize,red!60]{patches} (rvd.west);
+
+% annotations
+\node[font=\scriptsize, text=red!70, above=0.1cm of fix] {remediates\\blocking\\+ crit/high};
+\node[font=\scriptsize, text=green!60!black, below=0.1cm of pubd]
+  {clean\\repository};
+
+\end{tikzpicture}

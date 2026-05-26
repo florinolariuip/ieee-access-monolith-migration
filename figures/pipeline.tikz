@@ -1,0 +1,206 @@
+% Pipeline diagram — 10 skills + Terraform deployment stage
+% Compile with pdflatex (tikz, shapes.geometric, arrows.meta, positioning, backgrounds)
+\begin{tikzpicture}[
+  skill/.style = {
+    rectangle, rounded corners=3pt,
+    minimum width=2.6cm, minimum height=0.65cm,
+    font=\small\ttfamily, text centered,
+    line width=0.6pt
+  },
+  artefact/.style = {
+    rectangle, rounded corners=2pt,
+    minimum width=2.4cm, minimum height=0.5cm,
+    font=\scriptsize, text centered,
+    fill=gray!10, draw=gray!50, line width=0.4pt
+  },
+  cloud/.style = {
+    rectangle, rounded corners=3pt,
+    minimum width=2.6cm, minimum height=0.65cm,
+    font=\small\ttfamily, text centered,
+    fill=violet!15, draw=violet!50, line width=0.6pt
+  },
+  cloudout/.style = {
+    rectangle, rounded corners=2pt,
+    minimum width=2.4cm, minimum height=0.5cm,
+    font=\scriptsize, text centered,
+    fill=violet!8, draw=violet!40, line width=0.4pt
+  },
+  arrow/.style  = {-Stealth, line width=0.6pt, gray!70},
+  gate/.style   = {arrow, red!70, dashed},
+  deploy/.style = {-Stealth, line width=0.8pt, violet!70},
+  node distance = 0.35cm
+]
+
+% ---- colour definitions ----
+\colorlet{analyticfill}{blue!15}
+\colorlet{analyticborder}{blue!50}
+\colorlet{constructfill}{green!15}
+\colorlet{constructborder}{green!50}
+\colorlet{gatefill}{red!12}
+\colorlet{gateborder}{red!50}
+
+% ===========================
+% COLUMN 1 : analytical skills
+% ===========================
+\node[skill, fill=analyticfill, draw=analyticborder]
+  (req)  {/get\_requirements};
+\node[artefact, below=0.18cm of req]
+  (reqout) {REQUIREMENTS.md};
+
+\node[skill, fill=analyticfill, draw=analyticborder,
+      below=0.18cm of reqout]
+  (arch)  {/architecture};
+\node[artefact, below=0.18cm of arch]
+  (archout) {ARCHITECTURE.md};
+
+\node[skill, fill=analyticfill, draw=analyticborder,
+      below=0.18cm of archout]
+  (ref)  {/refactor};
+\node[artefact, below=0.18cm of ref]
+  (refout) {service dirs};
+
+% ===========================
+% COLUMN 2 : constructive skills
+% ===========================
+\node[skill, fill=constructfill, draw=constructborder,
+      right=1.5cm of req]
+  (wc)  {/write\_code};
+\node[artefact, below=0.18cm of wc]
+  (wcout) {feature files};
+
+\node[skill, fill=constructfill, draw=constructborder,
+      below=0.18cm of wcout]
+  (wu)  {/write\_unit\_tests};
+\node[artefact, below=0.18cm of wu]
+  (wuout) {xUnit projects};
+
+\node[skill, fill=constructfill, draw=constructborder,
+      below=0.18cm of wuout]
+  (wi)  {/write\_int\_tests};
+\node[artefact, below=0.18cm of wi]
+  (wiout) {WebAppFactory};
+
+% ===========================
+% COLUMN 3 : quality-gate skills
+% ===========================
+\node[skill, fill=gatefill, draw=gateborder,
+      right=1.5cm of wc]
+  (rv)  {/review};
+\node[artefact, below=0.18cm of rv]
+  (rvout) {REVIEW.md};
+
+\node[skill, fill=gatefill, draw=gateborder,
+      below=0.18cm of rvout]
+  (sec)  {/check\_security};
+\node[artefact, below=0.18cm of sec]
+  (secout) {SECURITY.md};
+
+\node[skill, fill=gatefill, draw=gateborder,
+      below=0.18cm of secout]
+  (fix)  {/fix};
+\node[artefact, below=0.18cm of fix]
+  (fixout) {patched src};
+
+\node[skill, fill=gatefill, draw=gateborder,
+      below=0.18cm of fixout]
+  (pub)  {/publish};
+\node[artefact, below=0.18cm of pub]
+  (pubout) {git push};
+
+% ===========================
+% COLUMN 4 : deployment stage (Terraform / OCI)
+% ===========================
+\node[cloud,
+      right=1.5cm of rv]
+  (tf)  {terraform apply};
+\node[cloudout, below=0.18cm of tf]
+  (tfout) {Slice-3 IaC};
+
+\node[cloud,
+      below=0.18cm of tfout]
+  (ci)  {cloud-init.yml};
+\node[cloudout, below=0.18cm of ci]
+  (ciout) {Docker + ports};
+
+\node[cloud,
+      below=0.18cm of ciout]
+  (vm)  {OCI A1.Flex VM};
+\node[cloudout, below=0.18cm of vm]
+  (vmout) {ARM64 service};
+
+% ===========================
+% ARROWS — within columns
+% ===========================
+\draw[arrow] (req)    -- (reqout);
+\draw[arrow] (reqout) -- (arch);
+\draw[arrow] (arch)   -- (archout);
+\draw[arrow] (archout)-- (ref);
+\draw[arrow] (ref)    -- (refout);
+
+\draw[arrow] (wc)     -- (wcout);
+\draw[arrow] (wcout)  -- (wu);
+\draw[arrow] (wu)     -- (wuout);
+\draw[arrow] (wuout)  -- (wi);
+\draw[arrow] (wi)     -- (wiout);
+
+\draw[arrow] (rv)     -- (rvout);
+\draw[arrow] (rvout)  -- (sec);
+\draw[arrow] (sec)    -- (secout);
+\draw[arrow] (secout) -- (fix);
+\draw[arrow] (fix)    -- (fixout);
+\draw[arrow] (fixout) -- (pub);
+\draw[arrow] (pub)    -- (pubout);
+
+\draw[deploy] (tf)    -- (tfout);
+\draw[deploy] (tfout) -- (ci);
+\draw[deploy] (ci)    -- (ciout);
+\draw[deploy] (ciout) -- (vm);
+\draw[deploy] (vm)    -- (vmout);
+
+% ===========================
+% ARROWS — cross-column
+% ===========================
+% analytical → constructive
+\draw[arrow] (archout) -- node[above,font=\scriptsize]{reads} (wc);
+\draw[arrow] (refout)  -| ([xshift=-0.5cm]wc.west) -- (wc);
+
+% constructive → gate
+\draw[arrow] (wcout) -- node[above,font=\scriptsize]{reads} (rv);
+
+% gate internal
+\draw[gate, bend left=30]
+  (fix) to node[right,font=\scriptsize,red!70]{clears} (rvout);
+\draw[gate, bend right=30]
+  (fix) to node[left,font=\scriptsize,red!70]{clears} (secout);
+
+% gate check at /publish
+\draw[gate] (rvout)  -| ([xshift=0.3cm]pub.east) -- (pub);
+\draw[gate] (secout) -| ([xshift=0.3cm]pub.east) -- (pub);
+
+% /publish git push → terraform apply (practitioner-run next step)
+\draw[deploy, very thick]
+  (pubout) -- node[above,font=\scriptsize,violet!80]{then} (tf);
+
+% ===========================
+% BACKGROUND BOXES
+% ===========================
+\begin{scope}[on background layer]
+  \node[fit=(req)(reqout)(arch)(archout)(ref)(refout),
+        fill=blue!4, draw=blue!20, rounded corners=4pt,
+        inner sep=4pt,
+        label={[font=\scriptsize,blue!60]above:Analytical}] {};
+  \node[fit=(wc)(wcout)(wu)(wuout)(wi)(wiout),
+        fill=green!4, draw=green!20, rounded corners=4pt,
+        inner sep=4pt,
+        label={[font=\scriptsize,green!60!black]above:Constructive}] {};
+  \node[fit=(rv)(rvout)(sec)(secout)(fix)(fixout)(pub)(pubout),
+        fill=red!4, draw=red!20, rounded corners=4pt,
+        inner sep=4pt,
+        label={[font=\scriptsize,red!60]above:Quality Gate}] {};
+  \node[fit=(tf)(tfout)(ci)(ciout)(vm)(vmout),
+        fill=violet!4, draw=violet!20, rounded corners=4pt,
+        inner sep=4pt,
+        label={[font=\scriptsize,violet!70]above:Cloud Deployment}] {};
+\end{scope}
+
+\end{tikzpicture}

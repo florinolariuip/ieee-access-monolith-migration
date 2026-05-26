@@ -1,0 +1,38 @@
+# --- LaTeX build artefacts ------------------------------------------------
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# --- Compiled PDFs --------------------------------------------------------
+# Regenerable from source. Excluded so the repo doesn't churn on every
+# compile and so the canonical artefact lives at the Zenodo deposit.
+*.pdf
+
+# --- OS / editor junk -----------------------------------------------------
+.DS_Store
+*~
+.idea/
+.vscode/
+
+# --- Experiment outputs ---------------------------------------------------
+# Per-run transcripts, scoring JSONs, and the rsync'd copies of Slice 1
+# under each run-NNN/output_repo/. Bulky and ephemeral; uploaded to
+# Zenodo as a single tarball, cited by DOI in the paper.
+experiments/runs/
+
+# Local credentials / batch state
+experiments/runs/_batch.pid
+experiments/runs/_security.pid
+
+# Python bytecode
+__pycache__/
+*.pyc

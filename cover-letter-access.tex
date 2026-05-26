@@ -1,0 +1,116 @@
+%% Cover letter for IEEE Access submission
+%% Compile with pdflatex
+\documentclass[11pt, a4paper]{letter}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\signature{Florin Olariu\\
+  Faculty of Computer Science\\
+  Alexandru Ioan Cuza University of Ia\c{s}i, Romania\\
+  \texttt{folariu@suvoda.com}\\[4pt]
+  \small(on behalf of both authors)}
+
+\address{Florin Olariu\\
+  Faculty of Computer Science\\
+  Alexandru Ioan Cuza University of Ia\c{s}i\\
+  Bd.\ Carol I, Nr.\ 11, 700506 Ia\c{s}i\\
+  Romania}
+
+\date{\today}
+
+\begin{document}
+
+\begin{letter}{%
+  Editor-in-Chief\\
+  \textit{IEEE Access}
+}
+
+\opening{Dear Editor,}
+
+We submit for consideration in \textit{IEEE Access} our manuscript,
+
+\begin{center}
+  \textbf{``A Skill-Mediated LLM Workflow for Migrating a .NET Monolith
+  to Microservices: A Controlled Case Study''}
+\end{center}
+
+\textbf{What the paper reports.}
+We present a controlled case study of a skill-mediated LLM workflow
+applied end-to-end to a single .NET~10 monolith.  The workflow
+composes ten Claude~Code skill scripts into a complete sequence:
+requirements extraction, architecture analysis, microservices
+decomposition, code generation, unit and integration testing,
+automated review, automated security checks, automated remediation,
+and gated publish.  The case study uses four publicly-available
+artefacts: the monolith (Slice~1), a manually-engineered microservices
+reference (Slice~2), the workflow's automated decomposition
+(Slice~1~Refactored), and a Terraform configuration for Oracle Cloud
+Infrastructure (Slice~3).
+
+\textbf{What we measure.}
+The paper reports empirical results from four measurement campaigns:
+(i) structural alignment between the workflow's decomposition and the
+independently-engineered manual reference, scored mechanically against
+a pre-registered twenty-dimension rubric over ten repeated runs;
+(ii) wall-clock duration of the automated decomposition compared to
+the developer-time spent producing the manual reference;
+(iii) an ablation that isolates the contribution of the skill scripts
+above raw LLM capability by re-running the same model on the same
+input with all skills disabled (ten baseline runs); and
+(iv) precision and recall of the workflow's automated security
+checks on a 20-file matched-pair injection corpus covering ten common
+.NET vulnerability classes.
+
+\textbf{Reproducibility.}
+The skill scripts, the four artefact repositories tagged at the
+experimental commit, the raw run logs and transcripts, the scoring
+scripts, the verifier changelog, the security injection corpus, and
+a full environment manifest (LLM model identity, CLI version,
+hardware, dependency versions) are deposited at Zenodo and cited by
+DOI in the manuscript.  The exact configuration can be reproduced
+under the same model identity; transfer to other monoliths, languages
+or models requires re-evaluation, and we discuss the limits of the
+case-study scope explicitly in the threats-to-validity section.
+
+\textbf{Scope and limits.}
+We present the workflow as a reproducible pilot, not as a validated
+general-purpose migration tool.  We make no claim that the decomposition
+quality, productivity figures, or security-check performance generalise
+beyond the case study without additional evaluation.  The contribution
+is the composition pattern plus the reproducibility deposit, evaluated
+honestly on one concrete .NET codebase.
+
+\textbf{Fit for \textit{IEEE Access}.}
+\textit{IEEE Access} accommodates reproducible case studies that
+combine engineering practice with empirical evaluation, which is the
+shape of this work.  The manuscript is structured around a clear
+methodology section, multi-run empirical measurements with mean and
+standard deviation, a baseline isolation experiment, an ablation
+of failure modes, and a precision-recall security evaluation.
+
+\textbf{Authors and contributions.}
+\begin{itemize}
+  \item \textbf{Florin Olariu} (Alexandru Ioan Cuza University of
+    Ia\c{s}i and Suvoda LLC) --- skill design and implementation,
+    experimental harness, evaluation, writing.
+  \item \textbf{Lenu\c{t}a Alboaie} (Alexandru Ioan Cuza University of
+    Ia\c{s}i) --- manual microservices reference (Slice~2) produced
+    independently of the skill prompts, scoring rubric design,
+    independent verification pass, writing.
+\end{itemize}
+
+\textbf{Originality and ethics.}
+This work has not been published elsewhere and is not under review
+at any other venue.  No human or animal subjects are involved.  We
+declare no conflicts of interest.
+
+We thank you for your consideration and look forward to the
+reviewers' assessment.
+
+\closing{Respectfully yours,}
+
+\end{letter}
+\end{document}

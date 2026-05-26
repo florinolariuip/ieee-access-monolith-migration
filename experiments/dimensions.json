@@ -1,0 +1,25 @@
+{
+  "_comment": "Pre-registered 20-dimension rubric. Do NOT edit after first scored run.",
+  "dimensions": [
+    {"id": "D01", "category": "structural", "rubric": "The decomposition produces exactly three services aligned with the bounded contexts: Animals, Adoptions, and Donations.", "verifier": "check_three_services"},
+    {"id": "D02", "category": "structural", "rubric": "A YARP gateway project exists and routes /api/* to the services.", "verifier": "check_yarp_gateway"},
+    {"id": "D03", "category": "structural", "rubric": "Each service is a separate ASP.NET Core project with its own .csproj and Program.cs.", "verifier": "check_separate_projects"},
+    {"id": "D04", "category": "structural", "rubric": "No service references another service's project directly; inter-service communication is HTTP, not project reference.", "verifier": "check_no_cross_project_refs"},
+    {"id": "D05", "category": "data", "rubric": "Each service owns a distinct DbContext class.", "verifier": "check_distinct_dbcontexts"},
+    {"id": "D06", "category": "data", "rubric": "Schema isolation is enforced via HasDefaultSchema on each DbContext.", "verifier": "check_default_schema"},
+    {"id": "D07", "category": "data", "rubric": "Connection strings use distinct Search Path settings per service.", "verifier": "check_search_path"},
+    {"id": "D08", "category": "data", "rubric": "Foreign keys that would cross bounded contexts in the monolith are replaced with identifier references (no cross-schema FKs).", "verifier": "check_no_cross_schema_fk"},
+    {"id": "D09", "category": "interfaces", "rubric": "Inter-service HTTP calls use typed HttpClient classes registered via IHttpClientFactory.", "verifier": "check_typed_httpclients"},
+    {"id": "D10", "category": "interfaces", "rubric": "Internal endpoints used only for inter-service communication are routed under /internal/ and not exposed by the gateway.", "verifier": "check_internal_routes"},
+    {"id": "D11", "category": "interfaces", "rubric": "Public endpoints follow REST conventions (GET /api/<resource>, POST /api/<resource>, GET /api/<resource>/{id}).", "verifier": "check_rest_endpoints"},
+    {"id": "D12", "category": "deploy", "rubric": "A docker-compose.yml at repo root brings up postgres + all services + gateway, with port assignments 5101/5102/5103/5100.", "verifier": "check_docker_compose"},
+    {"id": "D13", "category": "deploy", "rubric": "Each service has a Dockerfile that targets .NET 10 (mcr.microsoft.com/dotnet/aspnet:10.0).", "verifier": "check_service_dockerfiles"},
+    {"id": "D14", "category": "deploy", "rubric": "appsettings.json contains no hardcoded production secrets.", "verifier": "check_no_appsettings_secrets"},
+    {"id": "D15", "category": "security", "rubric": "AllowedHosts is set to a specific host, not '*', in every service's appsettings.Production.json (if present).", "verifier": "check_allowed_hosts"},
+    {"id": "D16", "category": "security", "rubric": "Internal endpoints are protected by a loopback or shared-key filter.", "verifier": "check_internal_protection"},
+    {"id": "D17", "category": "security", "rubric": "CORS policy is restrictive (no AllowAnyOrigin in production).", "verifier": "check_cors_policy"},
+    {"id": "D18", "category": "docs", "rubric": "README.md at repo root documents how to run the system locally.", "verifier": "check_readme_present"},
+    {"id": "D19", "category": "docs", "rubric": "Each service has its own README or service-level documentation.", "verifier": "check_per_service_readme"},
+    {"id": "D20", "category": "docs", "rubric": "ARCHITECTURE.md or equivalent documents the service boundaries and inter-service communication contract.", "verifier": "check_architecture_doc"}
+  ]
+}

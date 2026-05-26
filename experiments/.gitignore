@@ -1,0 +1,10 @@
+# Experiment outputs — large, ephemeral, uploaded to Zenodo as a tarball.
+runs/
+!runs/.gitkeep
+
+# Scoring intermediates
+*.pyc
+__pycache__/
+
+# OS junk
+.DS_Store

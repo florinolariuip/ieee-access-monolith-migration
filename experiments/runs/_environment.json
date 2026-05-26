@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-05-26T16:40:39Z",
+  "machine": {
+    "uname": "Darwin Florins-MacBook-Pro.local 25.5.0 Darwin Kernel Version 25.5.0: Mon Apr 27 20:41:15 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T6041 arm64",
+    "cpu_brand": "Apple M4 Pro",
+    "ram_gb": 24,
+    "arch": "arm64"
+  },
+  "toolchain": {
+    "claude_cli_version": "2.1.143",
+    "claude_model": "claude-sonnet-4-5-20250929",
+    "dotnet_sdk": "10.0.100",
+    "docker": "Docker version 29.4.3, build 055a478",
+    "git": "2.50.1"
+  },
+  "skills": { "architecture": "8d84a420b613a26cb682f8af2544631f4ad0e582b47eb7e3a226f1268b5ddb23","check_security": "77720a26b3d8d6715b1ee2bca2b2ee5567ab1b082b397477f1b8f35e008a6472","fix": "914ed188dc3028935400b8b78ccfd784bd423dc506bfd01a346a54fb4534a85c","get_requirements": "58e779d891f5d479792d84fdbfb7a6ebd70fa9a36cc380e66e7847f9dbc27199","publish": "c64662776a44ab872b4d356be94a459cf40a436d640cb0743bb2bc9b4d3b84cc","refactor": "bdb9474e80c1bf5089bf2c7210668bcd366dba46f683aa1fad4db0736ea12090","review": "ff5e670f6ef531473f8a07daa1afb0ff9a4a9a0385f537b8325ee5d11d9d267e","write_code": "e0ee520afcb670f06a409341427977f2cbc6173613685c891b7c0638068a18aa","write_integration_tests": "c3fb7fe1e6ac93d392cbe97b4c3aa540c7b0e265178e44f5e81ea141737a4bf8","write_unit_tests": "9382b0268572ccc99affdda76174a2bbc98850020f14bc23282bff38728f7949" },
+  "slices": {
+    "slice1_commit":            "78df0fb965acd9ae072b9a7c78e3656831fe605f",
+    "slice2_commit":            "9de52d4e5aba53f8ca92d2adf2a86b07a93a99fd",
+    "slice1_refactored_commit": "7470adc66a3b75e09e50d88d9ffe372e4111eb5d"
+  },
+  "run_counts": {
+    "refactor_runs":   10,
+    "baseline_runs":   10,
+    "full_cycle_runs": 5
+  }
+}

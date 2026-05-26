@@ -1,0 +1,89 @@
+% Architecture comparison: monolith (left) vs microservices (right)
+\begin{tikzpicture}[
+  svc/.style   = {rectangle, rounded corners=3pt, minimum width=2.5cm,
+                  minimum height=0.7cm, font=\small, text centered,
+                  line width=0.7pt},
+  db/.style    = {cylinder, shape border rotate=90, aspect=0.25,
+                  minimum width=1.6cm, minimum height=0.55cm,
+                  font=\scriptsize, text centered,
+                  fill=yellow!15, draw=yellow!60!black, line width=0.6pt},
+  sidecar/.style={rectangle, dashed, rounded corners=2pt,
+                  minimum width=1.8cm, minimum height=0.5cm,
+                  font=\scriptsize, text centered,
+                  fill=gray!10, draw=gray!50, line width=0.5pt},
+  arr/.style   = {-Stealth, line width=0.55pt},
+  node distance= 0.4cm
+]
+
+% ===================== LEFT: MONOLITH =====================
+\node[svc, fill=orange!20, draw=orange!60, minimum width=3.2cm,
+      minimum height=3.6cm, align=center]
+  (mono) at (-4,0) {};
+\node[font=\small\bfseries, above=0.05cm of mono.north] {PetRescue.Api};
+\node[font=\scriptsize, text=gray, below=0.1cm of mono.north, anchor=north]
+  (s1lbl) {S1 ORM N+1\\S2 Algorithmic\\S3 Missing Index\\S4 File I/O\\S5 Aggregation};
+
+\node[db, below=0.35cm of mono]
+  (monodb) {PostgreSQL};
+\draw[arr] (mono) -- (monodb);
+
+\node[sidecar, below=0.2cm of monodb]
+  (cc1) {CodeCarbon};
+\draw[arr, dashed, gray] (monodb) -- (cc1);
+
+% ===================== RIGHT: MICROSERVICES =====================
+% Gateway
+\node[svc, fill=purple!15, draw=purple!50,
+      minimum width=2.6cm]
+  (gw) at (2,2.5) {Gateway (YARP)};
+
+% Animals.Api
+\node[svc, fill=blue!15, draw=blue!50,
+      below left=0.7cm and 0.2cm of gw]
+  (animals) {Animals.Api\\{\scriptsize S2, S4, Shelters}};
+\node[db, below=0.3cm of animals]
+  (animalsdb) {animals.*};
+
+% Medical.Api
+\node[svc, fill=green!15, draw=green!50,
+      below right=0.7cm and 0.2cm of gw]
+  (medical) {Medical.Api\\{\scriptsize S1, S3, S5}};
+\node[db, below=0.3cm of medical]
+  (medicaldb) {medical.*};
+
+% Adopters.Api
+\node[svc, fill=teal!15, draw=teal!50,
+      below=0.5cm of animals, xshift=-1.0cm]
+  (adopters) {Adopters.Api};
+\node[db, below=0.3cm of adopters]
+  (adoptersdb) {adopters.*};
+
+% Shared Contracts
+\node[svc, fill=gray!12, draw=gray!40,
+      below=0.8cm of gw, xshift=0cm, font=\scriptsize]
+  (shared) {PetRescue.Shared\\(DTOs)};
+
+% arrows: gateway → services
+\draw[arr] (gw) -- (animals);
+\draw[arr] (gw) -- (medical);
+\draw[arr] (gw) -- (adopters);
+
+% arrows: services → dbs
+\draw[arr] (animals)  -- (animalsdb);
+\draw[arr] (medical)  -- (medicaldb);
+\draw[arr] (adopters) -- (adoptersdb);
+
+% cross-service: Medical calls Animals /internal
+\draw[arr, dashed, blue!60]
+  (medical.west) -- node[above,font=\scriptsize,blue!60]{/internal} (animals.east);
+
+% Shared contracts
+\draw[arr, gray!50, dotted] (shared) -- (animals);
+\draw[arr, gray!50, dotted] (shared) -- (medical);
+\draw[arr, gray!50, dotted] (shared) -- (adopters);
+
+% ===================== MIGRATION ARROW =====================
+\draw[-Stealth, line width=1.2pt, orange!70]
+  (-2.4, 0) -- node[above,font=\small\bfseries,orange!80!black]{/refactor} (0.8, 0);
+
+\end{tikzpicture}

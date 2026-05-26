@@ -1,0 +1,21 @@
+file,vuln_class,cwe,severity,description
+true_positives/01_sql_injection.cs,SQL Injection,CWE-89,Critical,String-concatenated SQL in EF Core FromSqlRaw with user input
+true_positives/02_hardcoded_secret.cs,Hardcoded Secret,CWE-798,High,API key embedded as a string constant
+true_positives/03_overpermissive_cors.cs,Overly Permissive CORS,CWE-942,High,AllowAnyOrigin() + AllowCredentials() combination
+true_positives/04_open_redirect.cs,Open Redirect,CWE-601,Medium,Redirect destination from un-validated query parameter
+true_positives/05_missing_authz.cs,Missing Authorization,CWE-862,Critical,Internal admin endpoint without [Authorize]
+true_positives/06_xxe.cs,XXE,CWE-611,High,XmlReader with DtdProcessing=Parse and no XmlResolver=null
+true_positives/07_path_traversal.cs,Path Traversal,CWE-22,High,File read with Path.Combine on user input without canonicalisation
+true_positives/08_insecure_deserialization.cs,Insecure Deserialization,CWE-502,Critical,BinaryFormatter.Deserialize on request body
+true_positives/09_weak_crypto.cs,Weak Cryptography,CWE-327,Medium,MD5 used for password hashing
+true_positives/10_jwt_no_verification.cs,JWT Signature Not Verified,CWE-347,Critical,JwtSecurityTokenHandler.ReadJwtToken without ValidateToken
+true_negatives/01_parameterised_query.cs,clean,,,Parameterised LINQ-to-EF query equivalent to TP-01
+true_negatives/02_config_from_env.cs,clean,,,Configuration value pulled from IConfiguration / env var
+true_negatives/03_strict_cors.cs,clean,,,Named CORS policy with WithOrigins(...)
+true_negatives/04_validated_redirect.cs,clean,,,Redirect to local URL with Url.IsLocalUrl check
+true_negatives/05_authz_attribute.cs,clean,,,Admin endpoint with [Authorize(Roles=\"Admin\")]
+true_negatives/06_safe_xml_reader.cs,clean,,,XmlReader with DtdProcessing=Prohibit
+true_negatives/07_canonical_path.cs,clean,,,Path.GetFullPath then prefix-check against allowed root
+true_negatives/08_typed_dto.cs,clean,,,System.Text.Json with typed DTO and source-generated context
+true_negatives/09_strong_crypto.cs,clean,,,PasswordHasher<T> with PBKDF2 defaults
+true_negatives/10_jwt_verified.cs,clean,,,JwtBearer with full TokenValidationParameters
