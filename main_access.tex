@@ -217,6 +217,20 @@ Our case study takes these as given. We do not propose a new
 decomposition method; we measure what happens when an LLM-based
 workflow applies these patterns end-to-end.
 
+Direct comparison between our workflow and the automated
+graph-clustering approach of Mazlami et al.\ is qualitative
+rather than quantitative. Their method evaluates a partition of
+classes against modularity-style objectives ($Q$, structural
+coupling), with the manual decomposition serving as one reference
+among several. Our scoring evaluates the produced
+\emph{implementation} --- the .NET projects, the gateway, the
+docker-compose, the per-service DbContexts --- against twenty
+implementation-level dimensions. The two evaluations therefore
+answer different questions: their work asks how cleanly a class
+graph can be split; ours asks what a deployable microservices
+codebase looks like when an LLM-mediated workflow tries to build
+one. Both are useful framings and neither subsumes the other.
+
 % ------------------------------------------------------------
 \subsection{LLM-assisted software engineering}
 % ------------------------------------------------------------
@@ -617,16 +631,20 @@ slightly faster than the skill-mediated condition. Zero invocation
 failures occurred.
 
 The baseline therefore \emph{outperforms} the skill-mediated workflow
-on isolated structural alignment by 13.4 percentage points. Almost
-the entire gap concentrates in four dimensions (D02, D06, D09, D13
-in Table~\ref{tab:per-dim}), all four of which were named explicitly
-in the baseline prompt. The pattern is interpretable. When asked
-for YARP, the LLM produces YARP. When asked for HasDefaultSchema
-isolation, it produces HasDefaultSchema isolation. When asked for
-.NET~10 Dockerfiles, it writes those. The \texttt{/refactor} skill
-prompt, by contrast, does not enumerate these specific
-implementations; it leaves the model free to choose architecturally
-defensible alternatives, and the model does so consistently.
+on isolated structural alignment by 13.4 percentage points. A
+two-sample Welch's $t$-test against the per-run scores (skill
+$N=9$, baseline $N=10$) returns $t = -8.19$, $df = 15.4$,
+$p \approx 5.3 \times 10^{-7}$ (two-sided). The gap is not a
+sampling artefact. Almost the entire difference concentrates in
+four dimensions (D02, D06, D09, D13 in Table~\ref{tab:per-dim}),
+all four of which were named explicitly in the baseline prompt. The
+pattern is interpretable. When asked for YARP, the LLM produces
+YARP. When asked for \texttt{HasDefaultSchema} isolation, it
+produces that. When asked for .NET~10 Dockerfiles, it writes those.
+The \texttt{/refactor} skill prompt, by contrast, does not
+enumerate these specific implementations; it leaves the model free
+to choose architecturally defensible alternatives, and the model
+does so consistently.
 
 This finding reframes what the skills contribute. They do not yield
 better single-shot rubric alignment than a well-prompted LLM. Their
@@ -690,15 +708,18 @@ producing output.'' No decomposition was produced. The mechanical
 scorer awarded $9/20$ --- the alignment the unchanged monolith
 already satisfies on rubric items like ``README present''.
 
-We report this as a 10\% (1 of 10) skill-invocation failure rate,
-recorded honestly in
-\texttt{experiments/runs/KNOWN\_RUN\_ISSUES.md} and excluded from
-the alignment mean (counted toward attempted runs and toward the
-failure rate). The likely cause is a race condition in skill
-discovery when non-interactive sessions are launched in quick
-succession. We did not retry within the protocol; reporting the
-failure rate honestly is more useful than presenting a re-run
-sample.
+We report this as a 1-of-10 (10\%) skill-invocation failure rate.
+A Wilson 95\% confidence interval on that proportion is
+[1.8\%, 40.4\%]; the point estimate is consequently a noisy one and
+should be read as a positive lower bound, not a precise rate. The
+run is logged in \texttt{experiments/runs/KNOWN\_RUN\_ISSUES.md}
+and excluded from the alignment mean (counted toward attempted
+runs and toward the failure rate). The likely cause is a race
+condition in skill discovery when non-interactive sessions are
+launched in quick succession. We did not retry within the
+protocol; reporting the failure rate honestly, with its wide
+confidence interval, is more useful than presenting a re-run
+sample whose acceptance rate the protocol would not constrain.
 
 The practical implication for a team adopting this kind of workflow
 is that the skill abstraction has a non-trivial reliability cost.
@@ -775,14 +796,19 @@ note it as an open follow-up.
 \label{sec:discussion}
 % ============================================================
 
-The four research questions answered separately produce a single
-unified picture. Treated as a tool for generating a single
-decomposition, the skill-mediated workflow underperforms a raw
-LLM with an explicit prompt. Treated as a wrapper around the LLM
-that the practitioner interacts with by typing one slash command
-per stage, with persistent intermediate artefacts and gated
-commits, the workflow provides something the raw LLM does not.
-This section spells out what.
+The skill-mediated workflow's contribution is not better LLM output.
+It is the wrapper around the LLM: a composition pattern that turns
+the model into something a practitioner can integrate into a
+commit-gated SDLC. The four research questions answered separately
+produce a single unified picture. Treated as a tool for generating
+a single decomposition, the workflow loses to a raw LLM given an
+equally specified prompt --- and the gap is statistically robust
+($p \approx 5 \times 10^{-7}$). Treated as the wrapper, it earns
+its place by composing across the full SDLC, persisting decisions
+to disk where humans can audit them, blocking commits that fail
+quality gates, and removing the prompt-engineering burden that the
+baseline result quietly assumes. This section spells out what each
+of those four properties is worth.
 
 % ------------------------------------------------------------
 \subsection{The skills' value is the wrapper, not the LLM output}

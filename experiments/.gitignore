@@ -1,6 +1,14 @@
 # Experiment outputs — large, ephemeral, uploaded to Zenodo as a tarball.
-runs/
-!runs/.gitkeep
+# Use runs/* (not runs/) so the directory itself is traversed and we can
+# selectively re-include the small research-note files below.
+runs/*
+
+# Re-include the small research-note files, the environment manifest,
+# and the inferential-statistics JSON (paper-cited).
+!runs/KNOWN_RUN_ISSUES.md
+!runs/INTERIM_OBSERVATIONS.md
+!runs/_environment.json
+!runs/_statistics.json
 
 # Scoring intermediates
 *.pyc

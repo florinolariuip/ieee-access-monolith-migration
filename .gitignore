@@ -27,7 +27,14 @@
 # Per-run transcripts, scoring JSONs, and the rsync'd copies of Slice 1
 # under each run-NNN/output_repo/. Bulky and ephemeral; uploaded to
 # Zenodo as a single tarball, cited by DOI in the paper.
-experiments/runs/
+experiments/runs/*
+
+# ...except the small research-note Markdown files that document
+# decisions about the run data; these belong in the repo.
+!experiments/runs/KNOWN_RUN_ISSUES.md
+!experiments/runs/INTERIM_OBSERVATIONS.md
+!experiments/runs/_environment.json
+!experiments/runs/_statistics.json
 
 # Local credentials / batch state
 experiments/runs/_batch.pid
