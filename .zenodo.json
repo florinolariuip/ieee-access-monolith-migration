@@ -1,0 +1,40 @@
+{
+  "title": "A Skill-Mediated LLM Workflow for Migrating a .NET Monolith to Microservices: Reproducibility Deposit",
+  "description": "Reproducibility artefacts accompanying the IEEE Access manuscript by Olariu and Alboaie. Contains: ten Claude Code skill scripts (pinned by SHA-256), the PetRescue and eShopOnWeb case-study codebases tagged at the experimental commit, raw run logs and transcripts for ten skill-mediated /refactor runs and ten baseline runs on PetRescue and three of each on eShopOnWeb, the security injection corpus (ten labelled vulnerable specimens and ten matched clean specimens), the pre-registered twenty-dimension structural rubrics for both cases, the dependency-free Python scoring and inferential-statistics scripts, the verifier changelog, and a full environment manifest (LLM model identity, Claude Code version, hardware, .NET SDK, Docker, all skill SHAs, all slice commits). Re-running the harness against the same model identity (claude-sonnet-4-5-20250929) should reproduce the qualitative pattern reported in the paper within the standard deviations reported there.",
+  "upload_type": "dataset",
+  "creators": [
+    {
+      "name": "Olariu, Florin",
+      "affiliation": "Faculty of Computer Science, Alexandru Ioan Cuza University of Iasi, Romania; Suvoda LLC"
+    },
+    {
+      "name": "Alboaie, Lenuta",
+      "affiliation": "Faculty of Computer Science, Alexandru Ioan Cuza University of Iasi, Romania"
+    }
+  ],
+  "keywords": [
+    "LLM-assisted software engineering",
+    "microservices migration",
+    "monolith decomposition",
+    "reproducible case study",
+    "ablation study",
+    "empirical software engineering",
+    ".NET",
+    "Claude Code",
+    "agentic AI"
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/florinolariuip/ieee-access-monolith-migration",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ],
+  "communities": [
+    {"identifier": "software-engineering"}
+  ],
+  "notes": "Companion deposit for IEEE Access submission. The manuscript is not yet peer-reviewed at the time of deposit; this record will be updated with the DOI of the published article on acceptance."
+}

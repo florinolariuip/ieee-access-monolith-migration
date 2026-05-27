@@ -17,6 +17,11 @@
 # compile and so the canonical artefact lives at the Zenodo deposit.
 *.pdf
 
+# --- Zenodo deposit tarballs ----------------------------------------------
+# Built by package_for_zenodo.sh. Multi-hundred MB; lives at Zenodo,
+# not in the Git repo.
+zenodo-deposit-*.tar.gz
+
 # --- OS / editor junk -----------------------------------------------------
 .DS_Store
 *~

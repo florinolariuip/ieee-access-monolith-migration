@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you reproduce or extend this work, please cite the IEEE Access manuscript and this reproducibility deposit."
+title: "A Skill-Mediated LLM Workflow for Migrating a .NET Monolith to Microservices: Reproducibility Deposit"
+abstract: >
+  Companion deposit for the IEEE Access submission by Olariu and Alboaie.
+  Contains ten Claude Code skill scripts, the PetRescue and eShopOnWeb
+  case-study codebases tagged at the experimental commit, raw run logs
+  and transcripts, the security injection corpus, the twenty-dimension
+  scoring rubrics, the dependency-free scoring and inferential
+  statistics scripts, the verifier changelog, and a full environment
+  manifest.
+type: dataset
+authors:
+  - family-names: Olariu
+    given-names: Florin
+    affiliation: "Faculty of Computer Science, Alexandru Ioan Cuza University of Iasi, Romania; Suvoda LLC"
+    email: folariu@suvoda.com
+  - family-names: Alboaie
+    given-names: Lenuta
+    affiliation: "Faculty of Computer Science, Alexandru Ioan Cuza University of Iasi, Romania"
+keywords:
+  - LLM-assisted software engineering
+  - microservices migration
+  - monolith decomposition
+  - reproducible case study
+  - .NET
+  - Claude Code
+license: MIT
+repository-code: "https://github.com/florinolariuip/ieee-access-monolith-migration"

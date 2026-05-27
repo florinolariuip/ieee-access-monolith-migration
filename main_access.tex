@@ -715,13 +715,14 @@ made on PetRescue. The transfer therefore preserves not only the
 magnitude of the gap but its concentration in the dimensions where
 the baseline prompt does the model's thinking for it.
 
-We treat this as the strongest evidence in the paper that the
-headline finding is not a PetRescue artefact. It is also evidence
-the paper deliberately stops short of: two codebases, one model,
-one prompt-engineer (the authors). A reviewer who wants stronger
-generalisation should expect us to point them at the public
-artefacts and the harness, both of which are ready to be re-run on
-a third codebase by anyone who wishes to do so.
+The transfer check is the paper's strongest single piece of
+evidence that the headline gap is not a PetRescue artefact. It is
+also the limit of what we can claim. Two codebases is two
+codebases. The model is one, the prompt-engineer is one, the
+hardware is one. A reviewer who wants broader generalisation
+should expect a pointer to the public harness and the suggestion
+that they run it on a third codebase, which they can do
+unattended.
 
 % ------------------------------------------------------------
 \subsection{RQ4 --- Security gate precision and recall}
@@ -993,13 +994,11 @@ alignment frequencies to make this variance visible.
 --- PetRescue (.NET~10, five scenarios) and Microsoft's
 eShopOnWeb (.NET~8, four bounded contexts) --- one LLM model, one
 Claude Code version, and one hardware configuration. The
-13-percentage-point skill-vs-baseline gap replicates across the
-two codebases to within 0.1 percentage points, which is more
-robust than the original PetRescue-only design and which the
-\S\ref{sec:results-transfer} transfer check makes visible. We
-still make no claim that the workflow's behaviour transfers to
-other languages, other LLMs, or substantially larger codebases
-without re-evaluation. We invite re-evaluation on additional
+13-percentage-point gap replicates across the two cases to within
+0.1 percentage points (\S\ref{sec:results-transfer}). We still
+make no claim that the behaviour transfers to other languages,
+other LLMs, or substantially larger codebases without
+re-evaluation. We invite re-evaluation on additional
 inputs and have published the harness in a form that makes
 re-running it straightforward.
 
@@ -1045,11 +1044,19 @@ report what they observe.
 %  Acknowledgements + Data availability
 % ============================================================
 \section*{Data Availability}
-All four artefact repositories are publicly available on GitHub at
-\url{https://github.com/florinolariuip}, tagged at the commit used
-for this experiment. Raw run logs, the scoring scripts, the
-verifier changelog, and the security injection corpus are deposited
-at \TBD{Zenodo DOI}.
+The harness, both case-study codebases, the pre-registered rubrics,
+the scoring scripts, the verifier changelog, the security injection
+corpus, and the per-run logs and transcripts are publicly available.
+The source repository for the manuscript and harness is at
+\url{https://github.com/florinolariuip/ieee-access-monolith-migration}.
+The full reproducibility deposit, including the per-run output
+codebases that are too large to host in Git, is archived at Zenodo:
+\TBD{Zenodo DOI}. The environment manifest at
+\texttt{experiments/runs/\_environment.json} records the exact model
+identity (\texttt{claude-sonnet-4-5-20250929}), Claude Code version
+(\texttt{2.1.143}), and SHA-256 of each skill prompt at experiment
+time, so that re-runs under the same identity reproduce the
+qualitative pattern within the standard deviations reported here.
 
 % ============================================================
 %  References
