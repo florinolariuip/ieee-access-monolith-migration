@@ -1,0 +1,27 @@
+{
+  "_comment": "Pre-registered 20-dimension rubric for the eShopOnWeb transfer case. Derived from Microsoft's own decomposition pattern in dotnet-architecture/eShopOnContainers (third-party reference). Do NOT edit after first scored run.",
+  "_reference": "https://github.com/dotnet-architecture/eShopOnContainers",
+  "_input_monolith": "https://github.com/dotnet-architecture/eShopOnWeb",
+  "dimensions": [
+    {"id": "E01", "category": "structural", "rubric": "The decomposition produces services aligned with eShop bounded contexts: Catalog, Basket, Ordering, Identity (at least 3 of these 4 must appear).", "verifier": "check_eshop_bounded_contexts"},
+    {"id": "E02", "category": "structural", "rubric": "An API gateway project exists (YARP, Ocelot, or equivalent reverse-proxy library) and routes /api/* to the services.", "verifier": "check_eshop_gateway"},
+    {"id": "E03", "category": "structural", "rubric": "Each service is a separate ASP.NET Core project with its own .csproj and Program.cs.", "verifier": "check_eshop_separate_projects"},
+    {"id": "E04", "category": "structural", "rubric": "No service references another service's project directly via <ProjectReference>; inter-service communication is HTTP, not project linkage.", "verifier": "check_eshop_no_cross_project_refs"},
+    {"id": "E05", "category": "data", "rubric": "Each service owns a distinct DbContext class.", "verifier": "check_eshop_distinct_dbcontexts"},
+    {"id": "E06", "category": "data", "rubric": "Database ownership is service-scoped: either a separate database per service or HasDefaultSchema isolation.", "verifier": "check_eshop_db_isolation"},
+    {"id": "E07", "category": "data", "rubric": "The Basket service uses a non-relational store (Redis or equivalent), reflecting eShopOnContainers' pattern.", "verifier": "check_eshop_basket_cache"},
+    {"id": "E08", "category": "data", "rubric": "Foreign keys that would cross bounded contexts in the monolith are replaced with identifier references (no cross-service FKs).", "verifier": "check_eshop_no_cross_service_fk"},
+    {"id": "E09", "category": "interfaces", "rubric": "Inter-service HTTP calls use typed HttpClient classes registered via IHttpClientFactory.AddHttpClient<>.", "verifier": "check_eshop_typed_httpclients"},
+    {"id": "E10", "category": "interfaces", "rubric": "Public endpoints follow REST conventions (GET /api/<resource>, POST /api/<resource>, GET /api/<resource>/{id}).", "verifier": "check_eshop_rest_endpoints"},
+    {"id": "E11", "category": "interfaces", "rubric": "Identity is centralised in a dedicated service (IdentityServer, ASP.NET Identity API, or equivalent), referenced by other services for token validation.", "verifier": "check_eshop_identity_service"},
+    {"id": "E12", "category": "deploy", "rubric": "A docker-compose.yml at repo root brings up the database, all services, and the gateway.", "verifier": "check_eshop_docker_compose"},
+    {"id": "E13", "category": "deploy", "rubric": "Each service has a Dockerfile that targets .NET 8 (mcr.microsoft.com/dotnet/aspnet:8.0 or sdk:8.0).", "verifier": "check_eshop_service_dockerfiles"},
+    {"id": "E14", "category": "deploy", "rubric": "appsettings.json contains no hardcoded production secrets; secrets come from environment or user-secrets.", "verifier": "check_eshop_no_appsettings_secrets"},
+    {"id": "E15", "category": "security", "rubric": "AllowedHosts is set to a specific host, not '*', in every service's appsettings.Production.json (if present).", "verifier": "check_eshop_allowed_hosts"},
+    {"id": "E16", "category": "security", "rubric": "Internal service endpoints used only for inter-service communication are not exposed by the public gateway.", "verifier": "check_eshop_internal_routes"},
+    {"id": "E17", "category": "security", "rubric": "CORS policy is restrictive (no AllowAnyOrigin in production code).", "verifier": "check_eshop_cors_policy"},
+    {"id": "E18", "category": "docs", "rubric": "README.md at repo root documents how to run the decomposed system locally (docker-compose up).", "verifier": "check_eshop_readme"},
+    {"id": "E19", "category": "docs", "rubric": "Each service has its own README or service-level documentation.", "verifier": "check_eshop_per_service_readme"},
+    {"id": "E20", "category": "docs", "rubric": "ARCHITECTURE.md or equivalent documents the service boundaries and the inter-service communication contract.", "verifier": "check_eshop_architecture_doc"}
+  ]
+}
