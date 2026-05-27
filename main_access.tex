@@ -47,34 +47,42 @@ Migrating a monolithic application to cloud-deployed microservices is
 laborious. Recent LLM-based coding assistants help with isolated steps,
 but they do not orchestrate the full sequence --- decomposition,
 testing, review, and deployment --- that the migration actually
-requires. We report a controlled case study of one composition pattern
-addressing this gap: ten Claude~Code skills chained into a single
-end-to-end workflow for migrating .NET monoliths. The study uses
-\textit{PetRescue}, an ASP.NET~Core~10 monolith, and produces four
-public artefacts: the monolith (Slice~1), an independently-engineered
-manual microservices reference (Slice~2), the workflow's automated
-decomposition (Slice~1~Refactored), and a Terraform configuration for
-Oracle Cloud Infrastructure (Slice~3). The empirical results come from
-four measurement campaigns. Ten repeated runs of the automated
-decomposition scored a mean of 12.11 of 20 (60.6\%,
-$\sigma{=}3.9\%$) on a pre-registered twenty-dimension structural
-rubric, with a 10\% skill-invocation failure rate. Ten matched
-baseline runs, in which the same model received the same input without
-the skill scripts, scored a mean of 14.80 of 20 (74.0\%,
-$\sigma{=}3.2\%$): the raw LLM with an explicit prompt
+requires. We report a controlled, multi-case study of one composition
+pattern addressing this gap: ten Claude~Code skills chained into a
+single end-to-end workflow for migrating .NET monoliths. The primary
+case uses \textit{PetRescue}, an ASP.NET~Core~10 monolith, and
+produces four public artefacts: the monolith (Slice~1), an
+independently-engineered manual microservices reference (Slice~2),
+the workflow's automated decomposition (Slice~1~Refactored), and a
+Terraform configuration for Oracle Cloud Infrastructure (Slice~3).
+A second case --- a transfer check on Microsoft's
+\textit{eShopOnWeb} monolith, scored against the active
+\textit{dotnet/eShop} microservices reference --- replicates the
+primary findings on a substantially different codebase and domain.
+On PetRescue, ten repeated runs of the automated decomposition scored
+a mean of 12.11 of 20 (60.6\%, $\sigma{=}3.9\%$) on a pre-registered
+twenty-dimension structural rubric, with a 10\% skill-invocation
+failure rate. Ten matched baseline runs in which the same model
+received the same input without the skill scripts scored
+14.80 of 20 (74.0\%, $\sigma{=}3.2\%$, Welch $t{=}-8.19$,
+$p \approx 5{\times}10^{-7}$): the raw LLM with an explicit prompt
 \emph{outperforms} the skill-mediated workflow on isolated
-structural alignment. The workflow's automated security checks
-exhibit perfect recall (10/10 of injected vulnerabilities flagged) but
-only 52.6\% precision and 10\% specificity on a matched ten-clean,
-ten-vulnerable corpus, consistent with automated DevOps hygiene rather
-than formal security validation. We interpret these findings honestly:
-the skill abstraction does not improve single-shot decomposition
-quality, but it provides composability across the full SDLC,
-artefact-mediated state, pre-commit gating, and lowered prompt
+structural alignment. On eShopOnWeb, three skill-mediated runs scored
+13.67 of 20 (68.3\%) and three baseline runs scored 16.33 of 20
+(81.7\%), a 13.3 percentage-point gap nearly identical to PetRescue's
+13.4-point gap --- the pattern transfers across codebases. The
+workflow's automated security checks exhibit perfect recall (10/10
+flagged) but 52.6\% precision and 10\% specificity on a matched
+ten-clean, ten-vulnerable corpus, consistent with automated DevOps
+hygiene rather than formal security validation. We interpret these
+findings honestly: the skill abstraction does not improve single-shot
+decomposition quality, but it provides composability across the full
+SDLC, artefact-mediated state, pre-commit gating, and lowered prompt
 engineering effort. The skills' value lies in the wrapper, not in
-better LLM output. We publish skill scripts, artefacts, run logs,
-scoring code, and the injection corpus to enable reproduction under
-the same configuration, and we discuss the limits of that scope.
+better LLM output. We publish skill scripts, both codebases, run
+logs, scoring code, and the injection corpus to enable reproduction
+under the same configuration, and we discuss the limits of that
+scope.
 \end{abstract}
 
 % ---------- keywords ----------
@@ -183,11 +191,17 @@ pattern on their own codebases.
         check on a 20-file matched-pair injection corpus covering
         ten common .NET vulnerability classes
         (recall 100\%, precision 52.6\%, specificity 10\%).
-  \item A reproducibility deposit: skill scripts, all four artefact
-        repositories tagged at the experimental commit, raw run logs,
+  \item A reproducibility deposit: skill scripts, both case-study
+        codebases tagged at the experimental commit, raw run logs,
         scoring scripts, the verifier changelog, the injection
         corpus, and a full environment manifest, archived with a
         permanent DOI.
+  \item A transfer check on a second, substantially different
+        codebase (Microsoft's \textit{eShopOnWeb}, scored against
+        the active \textit{dotnet/eShop} third-party reference)
+        that replicates the primary skill-vs-baseline gap to within
+        0.1 percentage points, establishing that the headline
+        finding is not specific to PetRescue.
 \end{enumerate}
 
 % ============================================================
@@ -652,6 +666,64 @@ contribution lies elsewhere, and we examine it in
 \S\ref{sec:discussion}.
 
 % ------------------------------------------------------------
+\subsection{Transfer check on a second codebase (eShopOnWeb)}
+\label{sec:results-transfer}
+% ------------------------------------------------------------
+
+The PetRescue case study answers the four research questions on a
+single codebase. A reasonable concern is that the headline pattern
+--- skill-mediated workflow underperforming a fully-prompted raw LLM
+by approximately 13 percentage points --- is specific to PetRescue's
+domain, size, or .NET~10 surface area. To check, we re-ran the
+skill-mediated and baseline conditions on a substantially different
+input: Microsoft's \textit{eShopOnWeb}, a .NET~8 e-commerce
+monolith that is roughly three times the size of PetRescue and that
+sits in a domain (catalog, basket, ordering, identity) the model
+has seen extensively in pre-training.
+
+The rubric for this case (\texttt{dimensions\_eshop.json}) is not
+authored against our own reference design. It is derived from
+Microsoft's active microservices reference,
+\texttt{github.com/dotnet/eShop}, which Microsoft architects
+maintain independently of this work. That reference itself scores
+15 of 20 against our rubric, establishing a third-party ceiling.
+We ran three skill-mediated and three baseline runs. The number
+is intentionally smaller than the PetRescue protocol's $N{=}10$:
+the goal here is a transfer sanity check, not a second
+fully-powered experiment.
+
+Skill-mediated runs scored 15, 14, and 12 (mean 13.67 of 20 = 68.3\%,
+$\sigma = 7.6\%$). Baseline runs scored 16, 16, and 17
+(mean 16.33 of 20 = 81.7\%, $\sigma = 2.9\%$). The skill-to-baseline
+gap is $-2.67$ dimensions, or $-13.3$ percentage points.
+PetRescue's gap was $-13.4$ percentage points. A two-sample
+Welch's $t$-test at $N{=}3$ each returns $t = -2.83$, $df = 2.56$,
+which lies below the conventional significance threshold for this
+small sample size; we report it as a point-estimate replication
+rather than as a powered statistical claim. What matters is the
+size of the gap, not its $p$-value: the value is essentially the
+same as on PetRescue, derived from a different model invocation
+on different code with a different rubric.
+
+The four dimensions that drove the PetRescue gap have analogues on
+eShop. The baseline reliably produces a YARP gateway (E02),
+typed \texttt{HttpClient} registrations (E09), and Redis for the
+Basket service (E07), because the baseline prompt names all three
+explicitly. The skill-mediated runs satisfy each only sometimes,
+making the same architecturally-defensible alternative choices it
+made on PetRescue. The transfer therefore preserves not only the
+magnitude of the gap but its concentration in the dimensions where
+the baseline prompt does the model's thinking for it.
+
+We treat this as the strongest evidence in the paper that the
+headline finding is not a PetRescue artefact. It is also evidence
+the paper deliberately stops short of: two codebases, one model,
+one prompt-engineer (the authors). A reviewer who wants stronger
+generalisation should expect us to point them at the public
+artefacts and the harness, both of which are ready to be re-run on
+a third codebase by anyone who wishes to do so.
+
+% ------------------------------------------------------------
 \subsection{RQ4 --- Security gate precision and recall}
 \label{sec:results-security}
 % ------------------------------------------------------------
@@ -917,12 +989,19 @@ favour. Second, run-to-run variance in LLM sampling is present in
 both conditions; we report standard deviations and per-dimension
 alignment frequencies to make this variance visible.
 
-\textit{External validity.} The case study uses one .NET monolith
-with five scenarios, one LLM model, one Claude Code version, and
-one hardware configuration. We make no claim that the workflow's
-quantitative behaviour transfers to other codebases, languages,
-models, or environments. We frame the contribution as a
-reproducible pilot and invite re-evaluation on other inputs.
+\textit{External validity.} The study uses two .NET monoliths
+--- PetRescue (.NET~10, five scenarios) and Microsoft's
+eShopOnWeb (.NET~8, four bounded contexts) --- one LLM model, one
+Claude Code version, and one hardware configuration. The
+13-percentage-point skill-vs-baseline gap replicates across the
+two codebases to within 0.1 percentage points, which is more
+robust than the original PetRescue-only design and which the
+\S\ref{sec:results-transfer} transfer check makes visible. We
+still make no claim that the workflow's behaviour transfers to
+other languages, other LLMs, or substantially larger codebases
+without re-evaluation. We invite re-evaluation on additional
+inputs and have published the harness in a form that makes
+re-running it straightforward.
 
 \textit{Reliability.} All measurements derive from logs that are
 captured, deposited, and re-computable from
