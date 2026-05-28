@@ -69,12 +69,20 @@ checks on a 20-file matched-pair injection corpus covering ten common
 \textbf{Headline result.}
 The original 13.4-percentage-point skill-vs-baseline gap decomposes
 into a 10.3-point prompt-specificity effect ($p < 0.001$) and a
-3.2-point skill-abstraction effect that does not reach significance.
-The skill abstraction is statistically indistinguishable from a
-vague-prompt baseline in single-shot alignment quality, but halves
-the practitioner-facing failure rate (10\% vs.\ 20\%) and removes
-the prompt-engineering burden. The wrapper's value is reliability
-and ergonomics, not better LLM output.
+3.2-point skill-abstraction effect that does not reach significance
+at $\alpha{=}0.05$ ($p \approx 0.11$, $N{=}9$ vs.\ $N{=}4$). We did
+not detect a difference between the skill abstraction and a
+vague-prompt baseline on single-shot alignment quality. What the
+skills do is remove the prompt-engineering burden: the
+matched-specificity baseline requires a 100-word prompt to reach
+74\% alignment, whereas the skill abstraction is invoked by typing
+\texttt{/refactor}. The two short-prompt conditions exhibited one
+failure each, of qualitatively different kinds (skill-invocation
+vs.\ premature-exit); we report the failure modes as qualitative
+findings rather than as a ranked reliability claim because the
+Wilson 95\% intervals overlap on this sample. The wrapper's value
+is ergonomics and the qualitative form of its failures, not better
+LLM output.
 
 \textbf{Transfer check on a second codebase.}
 To establish that the headline finding is not specific to the
