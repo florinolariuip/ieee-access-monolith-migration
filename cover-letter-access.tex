@@ -58,12 +58,23 @@ independently-engineered manual reference, scored mechanically against
 a pre-registered twenty-dimension rubric over ten repeated runs;
 (ii) wall-clock duration of the automated decomposition compared to
 the developer-time spent producing the manual reference;
-(iii) an ablation that isolates the contribution of the skill scripts
-above raw LLM capability by re-running the same model on the same
-input with all skills disabled (ten baseline runs); and
+(iii) a three-way ablation that separates skill-abstraction effect
+from prompt-specificity effect, comparing the skill-mediated workflow
+($N{=}10$) against both a fully-specified raw-LLM baseline ($N{=}10$)
+and a matched-specificity minimal-prompt baseline ($N{=}5$); and
 (iv) precision and recall of the workflow's automated security
 checks on a 20-file matched-pair injection corpus covering ten common
 .NET vulnerability classes.
+
+\textbf{Headline result.}
+The original 13.4-percentage-point skill-vs-baseline gap decomposes
+into a 10.3-point prompt-specificity effect ($p < 0.001$) and a
+3.2-point skill-abstraction effect that does not reach significance.
+The skill abstraction is statistically indistinguishable from a
+vague-prompt baseline in single-shot alignment quality, but halves
+the practitioner-facing failure rate (10\% vs.\ 20\%) and removes
+the prompt-engineering burden. The wrapper's value is reliability
+and ergonomics, not better LLM output.
 
 \textbf{Transfer check on a second codebase.}
 To establish that the headline finding is not specific to the
