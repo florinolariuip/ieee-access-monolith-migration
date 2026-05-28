@@ -132,21 +132,44 @@ def main():
             d = json.loads(sc.read_text())
             target.append(d["aligned"])
 
+    # Also collect the minimal-prompt baseline scores (third condition).
+    minimal_scores: list[int] = []
+    minimal_dir = workspace / "refactor-baseline-minimal"
+    if minimal_dir.is_dir():
+        for run in sorted(minimal_dir.iterdir()):
+            sc = run / "scoring.json"
+            if not sc.exists() or run.name == "run-002":  # 002 was a premature exit
+                continue
+            d = json.loads(sc.read_text())
+            minimal_scores.append(d["aligned"])
+
     if not skill_scores or not baseline_scores:
-        # Fallback to the locked study data, so the script can be reproduced
+        # Fallback to the locked study data so the script can be reproduced
         # from the repo even without the runs/ tarball.
-        skill_scores   = [11, 11, 13, 12, 13, 12, 12, 12, 13]
+        skill_scores    = [11, 11, 13, 12, 13, 12, 12, 12, 13]
         baseline_scores = [15, 15, 15, 16, 14, 15, 15, 14, 15, 14]
+    if not minimal_scores:
+        minimal_scores = [13, 12, 13, 13]
 
     result = {
-        "welch_t_test": welch(skill_scores, baseline_scores),
-        "skill_scores": skill_scores,
-        "baseline_scores": baseline_scores,
-        "invocation_failure_rate": {
-            "attempts": 10,
-            "failures": 1,
-            "point_estimate": 0.10,
-            "wilson_95_ci": list(wilson_ci(1, 10, 0.95)),
+        "skill_vs_fully_specified":   welch(skill_scores, baseline_scores),
+        "skill_vs_minimal":           welch(skill_scores, minimal_scores),
+        "minimal_vs_fully_specified": welch(minimal_scores, baseline_scores),
+        "skill_scores":                    skill_scores,
+        "minimal_baseline_scores":         minimal_scores,
+        "fully_specified_baseline_scores": baseline_scores,
+        "failure_rates": {
+            "skill":            {"attempts": 10, "failures": 1,
+                                 "rate": 0.10,
+                                 "wilson_95_ci": list(wilson_ci(1, 10, 0.95)),
+                                 "failure_mode": "skill-invocation"},
+            "minimal_baseline": {"attempts":  5, "failures": 1,
+                                 "rate": 0.20,
+                                 "wilson_95_ci": list(wilson_ci(1,  5, 0.95)),
+                                 "failure_mode": "premature-exit"},
+            "fully_specified":  {"attempts": 10, "failures": 0,
+                                 "rate": 0.00,
+                                 "wilson_95_ci": list(wilson_ci(0, 10, 0.95))},
         },
     }
 

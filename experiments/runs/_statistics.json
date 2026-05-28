@@ -1,11 +1,33 @@
 {
-  "welch_t_test": {
+  "skill_vs_fully_specified": {
     "t": -8.185772107050038,
     "df": 15.439168089901269,
     "p_two_sided": 1.058581863766764e-06,
     "mean_x": 12.11111111111111,
     "sd_x": 0.7817359599705715,
     "n_x": 9,
+    "mean_y": 14.8,
+    "sd_y": 0.6324555320336759,
+    "n_y": 10
+  },
+  "skill_vs_minimal": {
+    "t": -1.7692307692307703,
+    "df": 9.052614896988908,
+    "p_two_sided": 0.22089188947460542,
+    "mean_x": 12.11111111111111,
+    "sd_x": 0.7817359599705715,
+    "n_x": 9,
+    "mean_y": 12.75,
+    "sd_y": 0.5,
+    "n_y": 4
+  },
+  "minimal_vs_fully_specified": {
+    "t": -6.40312423743285,
+    "df": 7.099483810417646,
+    "p_two_sided": 0.0006906979960676901,
+    "mean_x": 12.75,
+    "sd_x": 0.5,
+    "n_x": 4,
     "mean_y": 14.8,
     "sd_y": 0.6324555320336759,
     "n_y": 10
@@ -21,7 +43,13 @@
     12,
     13
   ],
-  "baseline_scores": [
+  "minimal_baseline_scores": [
+    13,
+    12,
+    13,
+    13
+  ],
+  "fully_specified_baseline_scores": [
     15,
     15,
     15,
@@ -33,13 +61,35 @@
     15,
     14
   ],
-  "invocation_failure_rate": {
-    "attempts": 10,
-    "failures": 1,
-    "point_estimate": 0.1,
-    "wilson_95_ci": [
-      0.017876213095072896,
-      0.4041500267952385
-    ]
+  "failure_rates": {
+    "skill": {
+      "attempts": 10,
+      "failures": 1,
+      "rate": 0.1,
+      "wilson_95_ci": [
+        0.017876213095072896,
+        0.4041500267952385
+      ],
+      "failure_mode": "skill-invocation"
+    },
+    "minimal_baseline": {
+      "attempts": 5,
+      "failures": 1,
+      "rate": 0.2,
+      "wilson_95_ci": [
+        0.03622410863243014,
+        0.6244653702374747
+      ],
+      "failure_mode": "premature-exit"
+    },
+    "fully_specified": {
+      "attempts": 10,
+      "failures": 0,
+      "rate": 0.0,
+      "wilson_95_ci": [
+        0.0,
+        0.2775327998628892
+      ]
+    }
   }
 }

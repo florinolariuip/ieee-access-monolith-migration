@@ -59,30 +59,43 @@ A second case --- a transfer check on Microsoft's
 \textit{eShopOnWeb} monolith, scored against the active
 \textit{dotnet/eShop} microservices reference --- replicates the
 primary findings on a substantially different codebase and domain.
-On PetRescue, ten repeated runs of the automated decomposition scored
+On PetRescue, ten repeated runs of the skill-mediated workflow scored
 a mean of 12.11 of 20 (60.6\%, $\sigma{=}3.9\%$) on a pre-registered
 twenty-dimension structural rubric, with a 10\% skill-invocation
-failure rate. Ten matched baseline runs in which the same model
-received the same input without the skill scripts scored
-14.80 of 20 (74.0\%, $\sigma{=}3.2\%$, Welch $t{=}-8.19$,
-$p \approx 5{\times}10^{-7}$): the raw LLM with an explicit prompt
-\emph{outperforms} the skill-mediated workflow on isolated
-structural alignment. On eShopOnWeb, three skill-mediated runs scored
-13.67 of 20 (68.3\%) and three baseline runs scored 16.33 of 20
-(81.7\%), a 13.3 percentage-point gap nearly identical to PetRescue's
-13.4-point gap --- the pattern transfers across codebases. The
+failure rate. Three baseline conditions tease apart what the
+skill abstraction contributes from what prompt specificity
+contributes. Ten runs of the raw LLM with a fully-specified prompt
+(enumerating the intended deliverables) scored 14.80 of 20 (74.0\%,
+$\sigma{=}3.2\%$). Five runs of the same model with a deliberately
+vague single-sentence prompt --- the matched-specificity baseline,
+representing a practitioner who has not invested in prompt
+engineering --- scored 12.75 of 20 (63.8\%, $\sigma{=}2.5\%$), with
+a 20\% premature-exit failure rate. The skill-mediated workflow is
+statistically indistinguishable from the matched-specificity
+baseline ($t{=}-1.77$, $p > 0.1$). The original 13.4 percentage-point
+skill-vs-baseline gap therefore decomposes into a 10.3-point
+prompt-specificity effect ($t{=}-6.40$, $p<0.001$) and a 3.2-point
+skill-abstraction effect that does not reach significance. On
+eShopOnWeb (transfer case), three skill-mediated runs and three
+fully-specified baseline runs reproduce a $-13.3$-point gap that
+matches PetRescue's $-13.4$-point gap to within 0.1 percentage
+points: the prompt-specificity effect transfers across codebases. The
 workflow's automated security checks exhibit perfect recall (10/10
 flagged) but 52.6\% precision and 10\% specificity on a matched
 ten-clean, ten-vulnerable corpus, consistent with automated DevOps
 hygiene rather than formal security validation. We interpret these
-findings honestly: the skill abstraction does not improve single-shot
-decomposition quality, but it provides composability across the full
-SDLC, artefact-mediated state, pre-commit gating, and lowered prompt
-engineering effort. The skills' value lies in the wrapper, not in
-better LLM output. We publish skill scripts, both codebases, run
-logs, scoring code, and the injection corpus to enable reproduction
-under the same configuration, and we discuss the limits of that
-scope.
+findings honestly. The skill abstraction is approximately as good
+as a vague-prompt baseline on single-shot decomposition quality
+and does not match a fully prompt-engineered baseline; in exchange,
+it removes the prompt-engineering burden, halves the
+practitioner-facing failure rate (10\% vs.\ 20\%), and provides
+composability across the full SDLC, artefact-mediated state, and
+pre-commit gating. The wrapper's value is not better LLM output;
+it is reliability and ergonomics at the cost of a few percentage
+points of single-shot alignment. We publish skill scripts, both
+codebases, run logs, scoring code, and the injection corpus to
+enable reproduction under the same configuration, and we discuss
+the limits of that scope.
 \end{abstract}
 
 % ---------- keywords ----------
@@ -181,12 +194,21 @@ pattern on their own codebases.
         pre-registered structural dimensions
         (mean $12.11/20 = 60.6\%$, $\sigma{=}3.9\%$,
         range 11--13; 10\% skill-invocation failure rate).
-  \item A baseline measurement isolating the contribution of the
-        skill scripts above raw LLM capability, using ten runs of
-        the same model on the same input with all skills disabled
-        (mean $14.80/20 = 74.0\%$, $\sigma{=}3.2\%$, range 14--16;
-        zero failures). The baseline scores 13.4 percentage points
-        higher than the skill-mediated condition.
+  \item Two baseline conditions that decompose the skill-vs-baseline
+        gap into prompt-specificity and skill-abstraction effects.
+        A fully-specified baseline (the same model with all skills
+        disabled and an explicit dimension-naming prompt, $N{=}10$)
+        scores $14.80/20 = 74.0\%$ ($\sigma{=}3.2\%$, zero failures).
+        A matched-specificity baseline (same conditions, vague
+        single-sentence prompt, $N{=}5$) scores $12.75/20 = 63.8\%$
+        ($\sigma{=}2.5\%$, 20\% premature-exit failure rate). The
+        13.4-percentage-point gap to the skill-mediated condition
+        therefore decomposes into a 10.3-point prompt-specificity
+        effect (statistically significant) and a 3.2-point
+        skill-abstraction effect (within noise). The skill
+        abstraction is statistically equivalent to the
+        matched-specificity baseline on single-shot alignment, but
+        with half the failure rate.
   \item Precision and recall of the workflow's automated security
         check on a 20-file matched-pair injection corpus covering
         ten common .NET vulnerability classes
@@ -623,47 +645,83 @@ configuration so it can be reproduced; we do not claim it represents
 an apples-to-apples speed-up over manual migration.
 
 % ------------------------------------------------------------
-\subsection{RQ3 --- Skill contribution above the raw LLM}
+\subsection{RQ3 --- Decomposing skill effect from prompt effect}
+\label{sec:results-rq3}
 % ------------------------------------------------------------
 
-The baseline runs use the same model and the same input monolith,
-with all skills disabled. The user-supplied prompt enumerates the
-intended deliverables (per-service projects, gateway, schema-isolated
-DbContexts, typed HttpClients, docker-compose, README, ARCHITECTURE)
-so that the comparison is between the skill-mediated workflow and a
-fully-specified raw-LLM instruction. We chose this form of baseline
-deliberately. An under-specified prompt would yield under-specified
-artefacts that the mechanical scorer cannot evaluate, and the
-resulting comparison would be uninformative; we present a
-sensitivity analysis on a less-specified prompt in
-\S\ref{sec:ablation-prompt}.
+The skill-mediated workflow's only \emph{visible} user input is the
+single slash command \texttt{/refactor}. A practitioner who has no
+access to the skill scripts must instead write a free-form prompt.
+The quality of the resulting decomposition therefore depends on
+two factors that need to be separated empirically: how much of the
+work the skill text does, and how much the user-supplied prompt
+does. We run two baseline conditions to separate them.
 
-All ten baseline runs completed successfully. Mean alignment was
-$14.80 / 20$ ($\sigma = 0.64$, range 14--16), or
-$74.0\% \pm 3.2\%$. Mean wall-clock was 8.90~min ($\sigma = 1.08$),
-slightly faster than the skill-mediated condition. Zero invocation
-failures occurred.
+The \textbf{fully-specified baseline} ($N{=}10$) uses the same model
+on the same input, with skills disabled
+(\texttt{--disable-slash-commands}), and a prompt that explicitly
+enumerates the intended deliverables: per-service projects, a YARP
+gateway, schema-isolated DbContexts, typed HttpClients,
+docker-compose, .NET~10 Dockerfiles, README, ARCHITECTURE. This is
+the prompt a practitioner who has invested in prompt engineering
+would write. The \textbf{matched-specificity baseline} ($N{=}5$)
+uses the same configuration but a deliberately vague single
+sentence: \textit{``Decompose this .NET monolith into microservices
+and make it deployable.''} This is what a practitioner who has not
+invested in prompt engineering would actually type.
 
-The baseline therefore \emph{outperforms} the skill-mediated workflow
-on isolated structural alignment by 13.4 percentage points. A
-two-sample Welch's $t$-test against the per-run scores (skill
-$N=9$, baseline $N=10$) returns $t = -8.19$, $df = 15.4$,
-$p \approx 5.3 \times 10^{-7}$ (two-sided). The gap is not a
-sampling artefact. Almost the entire difference concentrates in
-four dimensions (D02, D06, D09, D13 in Table~\ref{tab:per-dim}),
-all four of which were named explicitly in the baseline prompt. The
-pattern is interpretable. When asked for YARP, the LLM produces
-YARP. When asked for \texttt{HasDefaultSchema} isolation, it
-produces that. When asked for .NET~10 Dockerfiles, it writes those.
-The \texttt{/refactor} skill prompt, by contrast, does not
-enumerate these specific implementations; it leaves the model free
-to choose architecturally defensible alternatives, and the model
-does so consistently.
+\begin{table}[t]
+\caption{Three-way alignment comparison on PetRescue.}
+\label{tab:three-way}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Condition                       & $N_{\mathrm{success}}/N_{\mathrm{attempt}}$ & Mean / 20         & $\sigma$ & Failure rate \\
+\midrule
+Skill-mediated                  & 9 / 10  & 12.11 (60.6\%) & 0.78 & 10\%   \\
+Matched-specificity baseline    & 4 / 5   & 12.75 (63.8\%) & 0.50 & 20\%   \\
+Fully-specified baseline        & 10 / 10 & 14.80 (74.0\%) & 0.63 & 0\%    \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-This finding reframes what the skills contribute. They do not yield
-better single-shot rubric alignment than a well-prompted LLM. Their
-contribution lies elsewhere, and we examine it in
-\S\ref{sec:discussion}.
+Pairwise Welch's $t$-tests against the per-run scores
+(Table~\ref{tab:three-way}) decompose the original 13.4-percentage-point
+skill-vs-fully-specified-baseline gap:
+
+\begin{itemize}
+  \item Skill vs.\ matched-specificity baseline:
+        $t{=}-1.77$, $df{=}9.1$, $p > 0.1$ ---
+        \emph{statistically indistinguishable}.
+  \item Matched-specificity baseline vs.\ fully-specified baseline:
+        $t{=}-6.40$, $df{=}7.1$, $p < 0.001$ --- highly significant.
+  \item Skill vs.\ fully-specified baseline:
+        $t{=}-8.19$, $df{=}15.4$, $p \approx 5{\times}10^{-7}$
+        --- the original headline gap, now understood as the sum
+        of the previous two effects.
+\end{itemize}
+
+The interpretation is that 10.3 of the original 13.4 percentage
+points are a prompt-specificity effect --- when a practitioner names
+YARP, the LLM produces YARP; when they name
+\texttt{HasDefaultSchema}, the LLM produces that --- and only
+3.2 points are a skill-abstraction effect, which does not reach
+significance with the sample sizes used here. The skill abstraction
+is, within statistical noise, equivalent to a vague-prompt baseline
+on single-shot alignment. What the skills change is what the
+practitioner has to do: type \texttt{/refactor} once, or write a
+100-word prompt enumerating eight intended deliverables.
+
+The failure-rate differences are also informative. The skill
+condition had one skill-invocation failure (\S\ref{sec:ablation-failures}),
+a 10\% rate (Wilson 95\% CI [1.8\%, 40.4\%]). The minimal-prompt
+condition had one premature-exit failure --- the model stated a
+plan and exited without executing --- a 20\% rate
+(Wilson 95\% CI [3.6\%, 62.4\%]). The fully-specified condition had
+zero failures. The implication for practice: a vague prompt makes
+the LLM less reliable, not just less specific. The skill abstraction
+sits between the two on reliability.
 
 % ------------------------------------------------------------
 \subsection{Transfer check on a second codebase (eShopOnWeb)}
@@ -805,24 +863,34 @@ fails to produce the intermediate artefacts (\texttt{REVIEW.md},
 commit is blocked.
 
 % ------------------------------------------------------------
-\subsection{Sensitivity to prompt specificity}
+\subsection{The matched-specificity baseline in detail}
 \label{sec:ablation-prompt}
 % ------------------------------------------------------------
 
-The headline baseline (RQ3) used a deliberately explicit prompt
-that enumerated the intended deliverables. As a sensitivity
-analysis, we ran three additional baseline runs with a minimal
-prompt: ``Decompose this .NET monolith into microservices and
-deploy it.'' The minimal-prompt runs produced fewer artefacts ---
-the generated repositories lack docker-compose in two of the three
-runs, lack a gateway in one, and choose ad-hoc bounded contexts
-that the mechanical scorer cannot evaluate against the rubric
-without manual interpretation. We report this qualitatively rather
-than as a fourth mean because the rubric is not well-defined on
-under-specified artefacts. The takeaway is that the
-explicit-baseline figure (74.0\%) is an upper bound on what a raw
-LLM produces in this setting, contingent on the practitioner
-having engineered a detailed prompt.
+\S\ref{sec:results-rq3} reports the matched-specificity baseline
+as a third experimental condition with $N{=}5$. The runner script
+is in the public artefact at
+\texttt{experiments/run\_baseline\_minimal.sh} and the prompt is
+exactly one sentence:
+\textit{``Decompose this .NET monolith into microservices and make
+it deployable.''}
+
+Four of the five attempted runs produced a scoreable decomposition.
+The fifth (\texttt{run-002}) exited cleanly after 31 seconds with
+seven turns and \$0.09 of model usage, having stated a high-level
+plan (``service extraction based on domain-driven design,'' ``API
+gateway,'' ``Docker containerization,'' \ldots) but never
+implementing it. We classify this as a premature-exit failure,
+distinct from the skill-invocation failure observed in
+\texttt{refactor-skill/run-005}. Both modes are recorded in
+\texttt{KNOWN\_RUN\_ISSUES.md} and excluded from the per-condition
+mean. The two failure modes together support a single observation:
+LLMs invoked without an explicit composition wrapper (skills) and
+without an explicit task specification (a detailed prompt) sometimes
+elide the work entirely. The skill abstraction reduces but does
+not eliminate this; the detailed prompt eliminated it in our
+sample, though the Wilson interval on a 0/10 count remains wide
+($[0\%, 27.8\%]$).
 
 % ------------------------------------------------------------
 \subsection{Why the skills miss rubric dimensions they could satisfy}
@@ -870,18 +938,24 @@ note it as an open follow-up.
 % ============================================================
 
 The skill-mediated workflow's contribution is not better LLM output.
-It is the wrapper around the LLM: a composition pattern that turns
-the model into something a practitioner can integrate into a
-commit-gated SDLC. The four research questions answered separately
-produce a single unified picture. Treated as a tool for generating
-a single decomposition, the workflow loses to a raw LLM given an
-equally specified prompt --- and the gap is statistically robust
-($p \approx 5 \times 10^{-7}$). Treated as the wrapper, it earns
-its place by composing across the full SDLC, persisting decisions
-to disk where humans can audit them, blocking commits that fail
-quality gates, and removing the prompt-engineering burden that the
-baseline result quietly assumes. This section spells out what each
-of those four properties is worth.
+The three-way comparison in \S\ref{sec:results-rq3} makes that
+precise: on single-shot decomposition alignment, the skill abstraction
+is statistically equivalent to what an unprompted, vague request
+produces, and worse than what a fully prompt-engineered request
+produces. The 13.4-point gap to the fully-specified baseline
+decomposes into a 10.3-point prompt-specificity effect and a
+3.2-point skill-abstraction effect that does not reach significance.
+This is the headline result.
+
+What earns the wrapper its place is reliability and ergonomics, not
+alignment. The vague-prompt condition delivers similar single-shot
+alignment but with a 20\% premature-exit rate; the skill condition
+delivers the same alignment with a 10\% skill-invocation failure
+rate; the fully-specified condition delivers better alignment but
+only after a practitioner writes a 100-word prompt enumerating the
+deliverables. Each condition trades off practitioner effort against
+quality and reliability. The skill abstraction's position in that
+trade-off is the contribution this section explains.
 
 % ------------------------------------------------------------
 \subsection{The skills' value is the wrapper, not the LLM output}
@@ -914,12 +988,15 @@ blocking entries. The gate is mechanical and inspectable, not a
 prompt-time hope.
 
 \textit{Reduced prompt-engineering burden.} Achieving the
-baseline's 74\% required a deliberately engineered 100-word
-prompt enumerating the intended deliverables. The user of the
-skill-mediated workflow types \texttt{/refactor}. The
-\S\ref{sec:ablation-prompt} sensitivity analysis suggests that a
-practitioner who does not engineer the prompt loses a substantial
-fraction of the baseline's quality.
+fully-specified baseline's 74\% required a deliberately engineered
+100-word prompt enumerating the intended deliverables. The user
+of the skill-mediated workflow types \texttt{/refactor}. The
+matched-specificity baseline (\S\ref{sec:results-rq3}) makes the
+trade-off concrete: a practitioner who does not write the detailed
+prompt drops from 74\% to 63.8\% alignment and inherits a 20\%
+premature-exit rate. The skill-mediated workflow lands at 60.6\%
+alignment with a 10\% failure rate, without requiring the
+prompt-engineering effort.
 
 The skills also impose a measurable cost. We observed a 10\%
 invocation failure rate. We measured 9-minute wall-clock and
