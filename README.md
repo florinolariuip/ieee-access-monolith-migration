@@ -114,9 +114,9 @@ cost per run is capped at \$5--\$8 by the harness; observed cost averaged
 ## How to cite
 
 If you reproduce, extend, or build on this work, please cite both the
-IEEE Access manuscript (DOI forthcoming) and this reproducibility
-deposit (`CITATION.cff` in the repository root; Zenodo DOI in the
-Data Availability section of the manuscript).
+IEEE Access manuscript (DOI forthcoming) and the reproducibility
+deposit at Zenodo: [10.5281/zenodo.20422420](https://doi.org/10.5281/zenodo.20422420).
+See `CITATION.cff` for the structured citation metadata.
 
 ## License
 

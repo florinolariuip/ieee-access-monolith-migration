@@ -27,3 +27,7 @@ keywords:
   - Claude Code
 license: MIT
 repository-code: "https://github.com/florinolariuip/ieee-access-monolith-migration"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20422420
+    description: "Zenodo deposit of the full reproducibility artefacts"
