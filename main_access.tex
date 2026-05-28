@@ -351,7 +351,15 @@ reproduced under the same configuration. The data backing every
 quantitative claim in subsequent sections derives from the procedures
 described here.
 
-\subsection{Subject system}
+\subsection{Subject systems}
+\label{sec:method-subjects}
+
+The study uses two monolithic .NET codebases. \textit{PetRescue} is
+the \textbf{primary case}, on which the four research questions are
+answered with full $N{=}10$ protocols. \textit{eShopOnWeb} is a
+\textbf{transfer case}, on which a smaller $N{=}3$ protocol checks
+whether the primary findings generalise across codebases.
+
 \textit{PetRescue} is an ASP.NET Core~10 Minimal API monolith
 organised around five scenarios (S1--S5) that span animal intake,
 medical workflows, adoption, donation tracking, and analytics. It
@@ -360,8 +368,22 @@ tests its scenarios warrant. The codebase is the unmodified Slice~1
 artefact, pinned at the commit hash recorded in our environment
 manifest. We chose it because it is small enough to be scored
 mechanically end-to-end yet contains multiple legitimate bounded
-contexts. We do not claim its decomposition behaviour transfers to
-larger codebases without re-evaluation.
+contexts.
+
+\textit{eShopOnWeb} is Microsoft's monolithic e-commerce reference
+application, targeting .NET~8, with bounded contexts for Catalog,
+Basket, Ordering, and Identity. It is substantially larger than
+PetRescue (roughly three times the source line count) and sits in
+a domain that the LLM has likely encountered extensively in
+pre-training. Critically for the experimental design, Microsoft
+maintains an actively-developed microservices reference of the
+same domain (\texttt{dotnet/eShop}), giving us a third-party
+ground truth against which to score our rubric. We pin the
+eShopOnWeb commit in the environment manifest.
+
+We do not claim that the decomposition behaviour observed on these
+two codebases transfers to larger codebases, other languages, or
+other LLMs without re-evaluation.
 
 \subsection{LLM and tooling configuration}
 All runs use \texttt{claude-sonnet-4-5-20250929} accessed through
@@ -388,43 +410,85 @@ is invoked. We pin each script by SHA-256 at experiment time.
 
 \subsection{Run protocol}
 \label{sec:method-runs}
+
+\textit{Primary case (PetRescue).}
 \begin{description}
-  \item[/refactor:] $N=10$ repeated runs. Each run starts from a fresh
-        \texttt{rsync} copy of Slice~1 in a per-run scratch directory.
-        The user-supplied prompt is identical across all runs and
-        consists of one instruction: invoke \texttt{/refactor},
-        proceed without further confirmation. Wall-clock time is
-        measured from the moment \texttt{claude} is invoked to the
-        moment it exits; API latency and human invocation overhead
-        are included in the figure.
-  \item[Baseline:] $N=10$ runs of the same model on the same input
-        with \texttt{--disable-slash-commands}. The prompt explicitly
-        asks for the same deliverables --- per-service projects,
-        YARP-style gateway, schema-isolated DbContexts, docker-compose,
-        README, ARCHITECTURE --- so that the comparison is between
-        skill-mediated workflow and a fully-specified raw-LLM
-        instruction, not against an under-specified one.
+  \item[Skill-mediated /refactor:] $N=10$ repeated runs. Each run
+        starts from a fresh \texttt{rsync} copy of Slice~1 in a
+        per-run scratch directory. The user-supplied prompt is
+        identical across all runs and consists of one instruction:
+        invoke \texttt{/refactor}, proceed without further
+        confirmation. Wall-clock time is measured from the moment
+        \texttt{claude} is invoked to the moment it exits; API
+        latency and human invocation overhead are included in the
+        figure.
+  \item[Fully-specified baseline:] $N=10$ runs of the same model on
+        the same input with \texttt{--disable-slash-commands}. The
+        prompt explicitly asks for the same deliverables ---
+        per-service projects, YARP-style gateway, schema-isolated
+        DbContexts, docker-compose, README, ARCHITECTURE --- so
+        that the comparison is between skill-mediated workflow and
+        a fully-specified raw-LLM instruction.
+  \item[Matched-specificity baseline:] $N=5$ runs of the same model
+        on the same input with \texttt{--disable-slash-commands},
+        but a deliberately vague single-sentence prompt
+        (\textit{``Decompose this .NET monolith into microservices
+        and make it deployable.''}). This third condition isolates
+        prompt-specificity effect from skill-abstraction effect by
+        controlling against an under-specified raw-LLM instruction.
   \item[Full quality-gated cycle:] $N=5$ runs of a feature-addition
         scenario invoking \texttt{/write\_code} $\to$
-        \texttt{/write\_unit\_tests} $\to$ \texttt{/write\_int\_tests}
-        $\to$ \texttt{/review} $\to$ \texttt{/check\_security} $\to$
-        \texttt{/fix} $\to$ \texttt{/publish}.
-  \item[Security audit:] one sweep over a 20-file matched-pair corpus
-        (\S\ref{sec:method-security}) on which \texttt{/check\_security}
-        is invoked once per file in a sandboxed scratch directory.
+        \texttt{/write\_unit\_tests} $\to$
+        \texttt{/write\_int\_tests} $\to$ \texttt{/review} $\to$
+        \texttt{/check\_security} $\to$ \texttt{/fix} $\to$
+        \texttt{/publish}.
+  \item[Security audit:] one sweep over a 20-file matched-pair
+        corpus (\S\ref{sec:method-security}) on which
+        \texttt{/check\_security} is invoked once per file in a
+        sandboxed scratch directory.
 \end{description}
 
-\subsection{Pre-registered structural rubric}
-The twenty dimensions used to score the decompositions are
-pre-registered in \texttt{experiments/dimensions.json} and frozen
-before any \texttt{/refactor} run was scored. Each dimension has a
-plain-English statement and a mechanical verifier (a Python function
-that reads the repository and returns a binary aligned/not-aligned
-verdict with textual evidence). Verifier implementations may be
-patched to fix mechanical bugs --- regexes that do not match their
-own rubric statement --- but the rubric itself is frozen. Every such
-patch is recorded in \texttt{experiments/scoring/VERIFIER\_CHANGELOG.md}
-with the before/after evidence on a regression input.
+\textit{Transfer case (eShopOnWeb).}
+\begin{description}
+  \item[Skill-mediated /refactor:] $N=3$ runs with the same
+        invocation pattern as the primary case (\texttt{/refactor},
+        proceed without confirmation). Smaller $N$ than the primary
+        case because the goal is transfer detection, not powered
+        repetition; we describe the resulting statistical
+        limitations explicitly in \S\ref{sec:results-transfer}.
+  \item[Fully-specified baseline:] $N=3$ runs with
+        \texttt{--disable-slash-commands} and a prompt that
+        enumerates the eShop bounded contexts (Catalog, Basket,
+        Ordering, Identity), mirroring the structure of the
+        primary case's fully-specified baseline.
+\end{description}
+
+\subsection{Pre-registered structural rubrics}
+\label{sec:method-rubrics}
+
+Both cases use a 20-dimension structural rubric, pre-registered and
+frozen before any \texttt{/refactor} run was scored. Each dimension
+has a plain-English statement and a mechanical verifier (a Python
+function that reads the repository and returns a binary
+aligned/not-aligned verdict with textual evidence). Verifier
+implementations may be patched to fix mechanical bugs --- regexes
+that do not match their own rubric statement --- but the rubric
+itself is frozen. Every such patch is recorded in
+\texttt{experiments/scoring/VERIFIER\_CHANGELOG.md} with the
+before/after evidence on a regression input.
+
+The primary-case rubric (\texttt{experiments/dimensions.json}) is
+derived from the second author's hand-engineered Slice~2 reference,
+which was constructed independently of and prior to the
+\texttt{/refactor} skill. The transfer-case rubric
+(\texttt{experiments/dimensions\_eshop.json}) is derived not from a
+reference authored by us but from Microsoft's actively-maintained
+\texttt{dotnet/eShop} microservices repository. Using a third-party
+reference for the second rubric reduces the risk that the rubric
+implicitly encodes choices the skill scripts were tuned to satisfy.
+We scored Microsoft's reference against our eShop rubric as a
+sanity check: it satisfies $15/20$ dimensions, which we interpret
+as a ceiling against which to read the experimental results.
 
 \subsection{Security injection corpus}
 \label{sec:method-security}
@@ -744,27 +808,22 @@ fully-specified-prompt condition exhibited neither in our sample.
 \label{sec:results-transfer}
 % ------------------------------------------------------------
 
-The PetRescue case study answers the four research questions on a
-single codebase. A reasonable concern is that the headline pattern
---- skill-mediated workflow underperforming a fully-prompted raw LLM
-by approximately 13 percentage points --- is specific to PetRescue's
-domain, size, or .NET~10 surface area. To check, we re-ran the
-skill-mediated and baseline conditions on a substantially different
-input: Microsoft's \textit{eShopOnWeb}, a .NET~8 e-commerce
-monolith that is roughly three times the size of PetRescue and that
-sits in a domain (catalog, basket, ordering, identity) the model
-has seen extensively in pre-training.
-
-The rubric for this case (\texttt{dimensions\_eshop.json}) is not
-authored against our own reference design. It is derived from
-Microsoft's active microservices reference,
-\texttt{github.com/dotnet/eShop}, which Microsoft architects
-maintain independently of this work. That reference itself scores
-15 of 20 against our rubric, establishing a third-party ceiling.
-We ran three skill-mediated and three baseline runs. The number
-is intentionally smaller than the PetRescue protocol's $N{=}10$:
-the goal here is a transfer sanity check, not a second
-fully-powered experiment.
+The transfer case --- introduced in
+\S\ref{sec:method-subjects}, with its rubric described in
+\S\ref{sec:method-rubrics} and its run protocol in
+\S\ref{sec:method-runs} --- tests whether the headline pattern
+observed on PetRescue (skill-mediated workflow underperforming a
+fully-prompted raw LLM by approximately 13 percentage points)
+generalises to a substantially different codebase. Microsoft's
+\textit{eShopOnWeb} is a .NET~8 e-commerce monolith roughly three
+times the size of PetRescue, sitting in a domain the model has seen
+extensively in pre-training. We use Microsoft's active
+\texttt{dotnet/eShop} microservices reference as the third-party
+ground truth from which the eShop rubric is derived; that reference
+scores 15 of 20 against our rubric, establishing a ceiling. The
+protocol is intentionally smaller than the primary case ($N{=}3$
+each): the goal is transfer detection, not a second fully-powered
+experiment.
 
 Skill-mediated runs scored 15, 14, and 12 (mean 13.67 of 20 = 68.3\%,
 $\sigma = 7.6\%$). Baseline runs scored 16, 16, and 17
